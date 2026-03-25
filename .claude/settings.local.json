@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn vitest:*)",
+      "WebFetch(domain:www.myzmanim.com)",
+      "Bash(yarn test:*)",
+      "Bash(yarn build:*)",
+      "Bash(node -e \":*)",
+      "WebSearch",
+      "Bash(wc:*)",
+      "Bash(yarn typecheck:*)"
+    ]
+  }
+}
