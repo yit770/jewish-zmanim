@@ -52,12 +52,6 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v6
       with:
-       name: lib
-       path: lib
-
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v6
-      with:
         name: dist
         path: dist
 
@@ -86,13 +80,7 @@ jobs:
 
       - name: Install
         run: yarn
-      
-      - name: Download build artifact
-        uses: actions/download-artifact@v6
-        with:
-          name: lib
-          path: lib
-      
+         
       - name: Download build artifact
         uses: actions/download-artifact@v6
         with:
