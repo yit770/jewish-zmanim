@@ -6,6 +6,7 @@ export default defineConfig({
     // reporters: [''],
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'json', 'html', 'cobertura'],
       enabled: true,
       exclude: [
         '**/node_modules/**',

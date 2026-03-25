@@ -27,6 +27,6 @@
     }
   },
   "files": {
-    "includes": ["src/**", "tests/**", "!dist/**", "!.yarn/**", "!coverage/**"]
+    "includes": ["src/**", "tests/**", "vitest.config.ts", "!dist/**", "!.yarn/**", "!coverage/**"]
   }
 }
