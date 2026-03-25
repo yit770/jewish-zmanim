@@ -45,13 +45,3 @@ All zmanim calculations are validated against MyZmanim.com with the following to
 
 If you change any solar math, re-validate all existing test cases.
 
-## Release
-
-Releases are handled via `bumpp`:
-
-```bash
-yarn bumpp        # Interactive version bump + git tag
-git push --follow-tags
-```
-
-The CI workflow automatically publishes to npm when a `v*` tag is pushed.
