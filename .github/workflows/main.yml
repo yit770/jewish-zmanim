@@ -50,7 +50,7 @@ jobs:
     #     path: code-coverage-results.md
 
     - name: Upload build artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: dist
         path: dist
@@ -82,7 +82,7 @@ jobs:
         run: yarn
          
       - name: Download build artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: dist
           path: dist
@@ -92,6 +92,8 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --provenance --access public
+        env:
+          HUSKY: 0
 
 
       # - run: npm install -g npm
@@ -109,13 +111,13 @@ jobs:
 
       - name: Get version from package.json
         id: get_version
-        run: echo "::set-output name=version::$(node -p "require('./package.json').version")"
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Set the tag to v${{ steps.get_version.outputs.version }}
         run:  git tag -a v${{ steps.get_version.outputs.version }} -m "Version ${{ steps.get_version.outputs.version }}"
 
-      - name: Commit 
+      - name: Commit
         run: |
-          git commit -am v$VERSION_TAG
+          git commit -am v${{ steps.get_version.outputs.version }}
           git push
           git push origin v${{ steps.get_version.outputs.version }}

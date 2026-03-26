@@ -42,7 +42,9 @@
     "format:check": "biome format src tests",
     "check": "biome check src tests",
     "check:fix": "biome check --write src tests",
-    "prepare": "husky"
+    "prepare": "husky || true",
+    "inc-version": "yarn version patch",
+    "get-version": "node -p \"require('./package.json').version\""
   },
   "lint-staged": {
     "*.ts": [
