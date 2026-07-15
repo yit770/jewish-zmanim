@@ -17,9 +17,19 @@ describe('guessTimezoneName', () => {
     assert.equal(tz, 'America/New_York');
   });
 
-  it('returns null for coordinates outside known regions', () => {
-    const tz = guessTimezoneName(0, 0); // Atlantic ocean
-    assert.equal(tz, null);
+  it('resolves open-ocean coordinates to a nautical/Etc timezone', () => {
+    const tz = guessTimezoneName(0, 0); // Atlantic ocean (Gulf of Guinea)
+    assert.equal(tz, 'Etc/GMT');
+  });
+
+  it('returns Australia/Sydney for southern-hemisphere coordinates', () => {
+    const tz = guessTimezoneName(-33.8688, 151.2093); // Sydney
+    assert.equal(tz, 'Australia/Sydney');
+  });
+
+  it('propagates a RangeError for out-of-range coordinates', () => {
+    assert.throws(() => guessTimezoneName(91, 0), /latitude/i);
+    assert.throws(() => guessTimezoneName(0, 999), /longitude/i);
   });
 });
 
@@ -47,6 +57,30 @@ describe('getTimezoneInfoFromName', () => {
     assert.equal(summer.dst, true);
     assert.equal(summer.dstLabel, 'Summer Time');
   });
+
+  it('detects DST for the southern hemisphere (January is summer)', () => {
+    // Australia/Sydney: DST active in January (+11), standard in July (+10).
+    // Exercises the Math.min(janOffset, julOffset) standard-offset logic.
+    const january = getTimezoneInfoFromName('2026-01-15', 'Australia/Sydney');
+    assert.equal(january.offset, 11);
+    assert.equal(january.dst, true);
+    assert.equal(january.dstLabel, 'Summer Time');
+
+    const july = getTimezoneInfoFromName('2026-07-15', 'Australia/Sydney');
+    assert.equal(july.offset, 10);
+    assert.equal(july.dst, false);
+    assert.equal(july.dstLabel, 'Standard Time');
+  });
+
+  it('reports no DST year-round for a fixed-offset zone (Asia/Kolkata)', () => {
+    // India never observes DST and sits at a half-hour offset.
+    for (const dateStr of ['2026-01-15', '2026-07-15']) {
+      const info = getTimezoneInfoFromName(dateStr, 'Asia/Kolkata');
+      assert.equal(info.offset, 5.5);
+      assert.equal(info.dst, false);
+      assert.equal(info.dstLabel, 'Standard Time');
+    }
+  });
 });
 
 describe('resolveTimezone', () => {
@@ -63,8 +97,10 @@ describe('resolveTimezone', () => {
     assert.equal(info.offset, -5);
   });
 
-  it('throws when timezone cannot be determined and no timezoneName provided', () => {
-    assert.throws(() => resolveTimezone(0, 0, '2026-02-13'));
+  it('still resolves open-ocean coordinates (geo-tz covers the globe)', () => {
+    const info = resolveTimezone(0, 0, '2026-02-13'); // Atlantic ocean
+    assert.equal(info.timezoneName, 'Etc/GMT');
+    assert.equal(info.offset, 0);
   });
 });
 
